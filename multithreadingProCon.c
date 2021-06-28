@@ -25,17 +25,17 @@ sem_t mutex;
 sem_t full;
 sem_t empty;
 buffer_item buffer[BUFFER_SIZE];					// the shared buffer
-int count;											// for insert/remove
-int in;												// insert pointer
-int out;											// remove pointer
+int count;								// for insert/remove
+int in;									// insert pointer
+int out;								// remove pointer
 
-void printBuffer() {								// to print the buffer
+void printBuffer() {							// to print the buffer
 	int i;
 	for(i = 0; i < BUFFER_SIZE; i++) {
 		if(buffer[i] == 0) {
-			printf("[empty]");						// print empty if = 0
+			printf("[empty]");				// print empty if = 0
 		} else {
-			printf("[%d]", buffer[i]);				// print item in buffer
+			printf("[%d]", buffer[i]);			// print item in buffer
 		}
 	}
 }
@@ -61,13 +61,13 @@ int insert_item(buffer_item item) {
 
 	while(count == BUFFER_SIZE);
 
-	buffer[in] = item;								// insert item at buffer[in]
+	buffer[in] = item;						// insert item at buffer[in]
 	printf("\nInsert_item inserted item "
 		"%d at postion %d\n", item, in);			// print item at pos y
 	in = (in + 1) % BUFFER_SIZE;					// in ++ or 0
-	printBuffer();									// print current buffer
-	printf(" in = %d, out = %d\n\n", in, out);		// print in and out pointers
-	count++;										// increment count
+	printBuffer();							// print current buffer
+	printf(" in = %d, out = %d\n\n", in, out);			// print in and out pointers
+	count++;							// increment count
 	
 	sem_post(&mutex);
 	sem_post(&full);
@@ -95,14 +95,14 @@ int remove_item(buffer_item *item) {
 
 	while(count == 0);
 	
-	*item = buffer[out];							// item to remove from buffer
+	*item = buffer[out];						// item to remove from buffer
 	printf("\nRemove_item removed item "
 			"%d at postion %d\n", *item, out);		// print item at pos y
-	buffer[out] = 0;								// buffer = 0
+	buffer[out] = 0;						// buffer = 0
 	out = (out + 1) % BUFFER_SIZE;					// out++ or 0
-	printBuffer();									// print current buffer
-	printf(" in = %d, out = %d\n\n", in, out);		// print in and out pointers
-	count--;										// decrement counter
+	printBuffer();							// print current buffer
+	printf(" in = %d, out = %d\n\n", in, out);			// print in and out pointers
+	count--;							// decrement counter
 
 	sem_post(&mutex);
 	sem_post(&empty);
@@ -122,24 +122,24 @@ int remove_item(buffer_item *item) {
 				print p thread id insert value
 */
 void *producer(void *param) {
-	int num;										// init sleep num and id
-	buffer_item item;								// init buffer item		
+	int num;							// init sleep num and id
+	buffer_item item;						// init buffer item		
 	pthread_t tid;
-	tid = *((int *) param);							// i = param
+	tid = *((int *) param);						// i = param
 	printf("Creating producer "
 		"thread with id %lu\n", tid);
 
 	while(1) {
-		num = (rand() % 3) + 1;						// generate random number
+		num = (rand() % 3) + 1;					// generate random number
 		printf("Producer thread "
-		"%lu sleeping for %d seconds\n", tid, num);	// print producer sleep(n)
-		sleep(num);									// sleep for random amount of time
-		item = (rand() % 100) + 1;					// generate a random number, producer's product
+		"%lu sleeping for %d seconds\n", tid, num);		// print producer sleep(n)
+		sleep(num);						// sleep for random amount of time
+		item = (rand() % 100) + 1;				// generate a random number, producer's product
 		if (insert_item(item) < 0) {
-			printf("Producer error\n");				// prod error
+			printf("Producer error\n");			// prod error
 		}
 		printf("Producer thread "
-		"%lu inserted value %d\n", tid, item);		// print inserted val	
+		"%lu inserted value %d\n", tid, item);			// print inserted val	
 	}						
 }
 
@@ -156,28 +156,28 @@ void *producer(void *param) {
 				print p thread id removed value
 */
 void *consumer(void *param) {
-	int num;										// init sleep num and id
-	buffer_item item;								// init buffer item	
-	pthread_t tid;									// thread id
-	tid = *((int *) param);							// pthread id = param
+	int num;							// init sleep num and id
+	buffer_item item;						// init buffer item	
+	pthread_t tid;							// thread id
+	tid = *((int *) param);						// pthread id = param
 	printf("Creating consumer "
 		"thread with id %lu\n", tid); 
 
 	while(1) {							
-		num = (rand() % 3) + 1;						// generate random number
+		num = (rand() % 3) + 1;					// generate random number
 		printf("Consumer thread "
-		"%lu sleeping for %d seconds\n", tid, num);	// print consumer sleep(n)
-		sleep(num);									// sleep for random amount of time
+		"%lu sleeping for %d seconds\n", tid, num);		// print consumer sleep(n)
+		sleep(num);						// sleep for random amount of time
 		if (remove_item(&item) < 0) {
-			printf("Consumer error\n");				// cons error
+			printf("Consumer error\n");			// cons error
 		}
 		printf("Consumer thread "
-		"%lu removed value %d\n", tid, item);		// print removed val
+		"%lu removed value %d\n", tid, item);			// print removed val
 	}
 }
 
 
-void initBuffer(){									// initialize buffer with zeroes
+void initBuffer(){							// initialize buffer with zeroes
 	int i;
 	for(i = 0; i < BUFFER_SIZE; i++) {
 		buffer[i] = 0;
@@ -195,34 +195,34 @@ void initBuffer(){									// initialize buffer with zeroes
 
 void main(int argc, char *argv[])
 {
-	int i;											// init indexing
-	int time, prodNumThreads, 						// init time, number of producer &
+	int i;								// init indexing
+	int time, prodNumThreads, 					// init time, number of producer &
 			consNumThreads, totalThreads;			// consumer threads and total number
-	pthread_attr_t attr; 							// set of attributes for the thread
+	pthread_attr_t attr; 						// set of attributes for the thread
 	pthread_t tid[NUM_THREADS]; 					// the thread identifier 
 
-	pthread_attr_init(&attr);						// get the default attributes 
-	sem_init(&mutex, 0, 1);							// init mutex to 1
-	sem_init(&full, 0, 0);							// init full to 0
+	pthread_attr_init(&attr);					// get the default attributes 
+	sem_init(&mutex, 0, 1);						// init mutex to 1
+	sem_init(&full, 0, 0);						// init full to 0
 	sem_init(&empty, 0 , BUFFER_SIZE);				// init empty to buffer size
 	pthread_attr_setdetachstate(&attr, 
-						PTHREAD_CREATE_JOINABLE);	// allow joinable
-	count = 0;										// init count to zero
-	in = 0; 										// init in to zero
-	out = 0;										// init out to zero
+						PTHREAD_CREATE_JOINABLE);// allow joinable
+	count = 0;							// init count to zero
+	in = 0; 							// init in to zero
+	out = 0;							// init out to zero
 	
-	time = atoi(argv[1]);							// 1. GET COMMAND LINE ARG, time sleep
+	time = atoi(argv[1]);						// 1. GET COMMAND LINE ARG, time sleep
 	prodNumThreads = atoi(argv[2]);					// num of producers = arg 2
 	consNumThreads = atoi(argv[3]);					// num of consumers = arg 3
-	totalThreads = prodNumThreads + consNumThreads;	// total of prod and cons
+	totalThreads = prodNumThreads + consNumThreads;			// total of prod and cons
 
-	initBuffer();									// 2. INITIALIZE BUFFER
+	initBuffer();							// 2. INITIALIZE BUFFER
 
-	printf("Main thread beginning\n\n");			// create the threads, producer first
+	printf("Main thread beginning\n\n");				// create the threads, producer first
 	for (i = 0; i < totalThreads; i++) { 
-		if(i >= prodNumThreads && i < totalThreads){// when i >= # of producer and i < total threads
+		if(i >= prodNumThreads && i < totalThreads){		// when i >= # of producer and i < total threads
 			pthread_create(&tid[i],&attr,
-					consumer,(void *) &tid[i]);		// 4. CREATE CONSUMER THREADS
+					consumer,(void *) &tid[i]);	// 4. CREATE CONSUMER THREADS
 		} else if(i < prodNumThreads) {
 			pthread_create(&tid[i],&attr,			// 3. CREATE PRODUCER THREADS
 					producer,(void *) &tid[i]); 
@@ -233,7 +233,7 @@ void main(int argc, char *argv[])
 				"for %d seconds\n\n", time); 		// 5. SLEEP
 	sleep(time);
 
-	printf("\nMain thread exiting\n\n");			// 6. EXIT
+	printf("\nMain thread exiting\n\n");				// 6. EXIT
 	pthread_attr_destroy(&attr);					// clean up
 	exit(0);										
 }
